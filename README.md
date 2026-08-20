@@ -35,11 +35,20 @@ Configuração: `backend/src/main/resources/application.properties`.
 
 ## Frontend
 
-Abra `frontend/index.html` no navegador ou sirva a pasta, por exemplo:
+Não abra o HTML como `file://` (origem `"null"`, bloqueada pelo CORS). Sirva a pasta na porta 5173:
 
 ```bash
 cd frontend
 npx --yes serve -p 5173
 ```
 
-O chat chama `http://localhost:8080/api/chat`. Mantenha o backend rodando.
+Depois acesse `http://localhost:5173` (ou `http://127.0.0.1:5173`). O chat chama `http://localhost:8080/api/chat`.
+
+## Checklist de teste
+
+1. Defina `GEMINI_API_KEY` e suba o backend: `cd backend` e `mvn spring-boot:run`.
+2. Confirme a API em `http://localhost:8080` (sem erro de porta ocupada).
+3. Em outro terminal, sirva o front: `cd frontend` e `npx --yes serve -p 5173`.
+4. Abra **somente** `http://localhost:5173` no navegador (não o arquivo local).
+5. Envie uma mensagem no chat (ex.: "Quais produtos vocês têm?").
+6. A resposta do bot deve aparecer; se falhar, abra o DevTools (F12) → Network e confira se `POST /api/chat` retorna 200 e se o preflight `OPTIONS` tem `Access-Control-Allow-Origin`.
