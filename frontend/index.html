@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MercadoBot — Chat</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --bg-soft: #1a2332;
+      --panel: #15202b;
+      --border: #243447;
+      --text: #e7ecf0;
+      --muted: #8b98a5;
+      --user: #1d9bf0;
+      --user-text: #fff;
+      --bot: #22303c;
+      --bot-text: #e7ecf0;
+      --accent: #00ba7c;
+      --danger: #f4212e;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(29, 155, 240, 0.18), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(0, 186, 124, 0.14), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+
+    .app {
+      width: min(760px, 100%);
+      height: min(860px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #1b2836 0%, #15202b 100%);
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #00ba7c, #1d9bf0);
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .title h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .title p {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 2px;
+    }
+
+    .session {
+      margin-left: auto;
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    .msg {
+      max-width: min(78%, 560px);
+      padding: 12px 14px;
+      border-radius: 18px;
+      line-height: 1.45;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      animation: rise 180ms ease-out;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background: var(--user);
+      color: var(--user-text);
+      border-bottom-right-radius: 6px;
+    }
+
+    .msg.bot {
+      align-self: flex-start;
+      background: var(--bot);
+      color: var(--bot-text);
+      border-bottom-left-radius: 6px;
+    }
+
+    .msg.error {
+      align-self: flex-start;
+      background: rgba(244, 33, 46, 0.12);
+      color: #ff8a92;
+      border: 1px solid rgba(244, 33, 46, 0.35);
+      border-bottom-left-radius: 6px;
+    }
+
+    .meta {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.7rem;
+      opacity: 0.72;
+    }
+
+    .typing {
+      align-self: flex-start;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      background: var(--bot);
+      border-radius: 18px;
+      border-bottom-left-radius: 6px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+    }
+
+    .typing.visible {
+      display: inline-flex;
+    }
+
+    .dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #8b98a5;
+      display: inline-block;
+      animation: bounce 1s infinite;
+    }
+
+    .dots span:nth-child(2) { animation-delay: 0.15s; }
+    .dots span:nth-child(3) { animation-delay: 0.3s; }
+
+    form {
+      display: flex;
+      gap: 10px;
+      padding: 14px;
+      border-top: 1px solid var(--border);
+      background: #121a24;
+    }
+
+    #message {
+      flex: 1;
+      resize: none;
+      min-height: 48px;
+      max-height: 140px;
+      border: 1px solid var(--border);
+      background: var(--bg-soft);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 13px 14px;
+      font: inherit;
+      outline: none;
+    }
+
+    #message:focus {
+      border-color: #1d9bf0;
+    }
+
+    button {
+      border: 0;
+      border-radius: 16px;
+      min-width: 96px;
+      background: var(--accent);
+      color: #06281c;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 0; }
+      .app {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        border: 0;
+      }
+      .msg { max-width: 86%; }
+      .session { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="logo" aria-hidden="true">🛒</div>
+      <div class="title">
+        <h1>MercadoBot</h1>
+        <p>Assistente do supermercado</p>
+      </div>
+      <div class="session" id="sessionLabel">sessão: —</div>
+    </header>
+
+    <section id="chat" aria-live="polite">
+      <div class="msg bot">
+        Olá! Sou o MercadoBot. Posso ajudar com produtos, preços e disponibilidade.
+        <span class="meta">agora</span>
+      </div>
+      <div class="typing" id="typing">
+        <span>Digitando</span>
+        <span class="dots"><span></span><span></span><span></span></span>
+      </div>
+    </section>
+
+    <form id="chatForm">
+      <textarea id="message" rows="1" placeholder="Digite sua mensagem..." autocomplete="off"></textarea>
+      <button type="submit" id="sendBtn">Enviar</button>
+    </form>
+  </main>
+
+  <script>
+    const API_URL = "http://localhost:8080/api/chat";
+    const chat = document.getElementById("chat");
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("message");
+    const sendBtn = document.getElementById("sendBtn");
+    const typing = document.getElementById("typing");
+    const sessionLabel = document.getElementById("sessionLabel");
+
+    function getSessionId() {
+      let id = sessionStorage.getItem("sessionId");
+      if (!id) {
+        id = "cliente-" + Math.random().toString(36).slice(2, 8);
+        sessionStorage.setItem("sessionId", id);
+      }
+      return id;
+    }
+
+    const sessionId = getSessionId();
+    sessionLabel.textContent = "sessão: " + sessionId;
+
+    function formatTime(value) {
+      const date = value ? new Date(value) : new Date();
+      if (Number.isNaN(date.getTime())) {
+        return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+      }
+      return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function addMessage(text, type, timestamp) {
+      const bubble = document.createElement("div");
+      bubble.className = "msg " + type;
+      bubble.textContent = text;
+
+      const meta = document.createElement("span");
+      meta.className = "meta";
+      meta.textContent = formatTime(timestamp);
+      bubble.appendChild(meta);
+
+      chat.insertBefore(bubble, typing);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function setLoading(isLoading) {
+      typing.classList.toggle("visible", isLoading);
+      sendBtn.disabled = isLoading;
+      input.disabled = isLoading;
+      if (isLoading) {
+        chat.scrollTop = chat.scrollHeight;
+      }
+    }
+
+    async function sendMessage(message) {
+      addMessage(message, "user");
+      setLoading(true);
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId, message })
+        });
+
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status);
+        }
+
+        const data = await res.json();
+        addMessage(data.response || "Não recebi uma resposta válida do servidor.", "bot", data.timestamp);
+      } catch (error) {
+        addMessage("Não foi possível falar com o servidor. Verifique se a API está rodando em localhost:8080.", "error");
+        console.error(error);
+      } finally {
+        setLoading(false);
+        input.focus();
+      }
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const message = input.value.trim();
+      if (!message || sendBtn.disabled) return;
+      input.value = "";
+      sendMessage(message);
+    });
+
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.requestSubmit();
+      }
+    });
+
+    input.focus();
+  </script>
+</body>
+</html>

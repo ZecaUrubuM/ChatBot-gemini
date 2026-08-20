@@ -13,6 +13,12 @@ pom.xml.releaseBackup
 pom.xml.versionsBackup
 release.properties
 
+### Node / Frontend ###
+node_modules/
+dist/
+.vite/
+.turbo/
+
 ### Segredos — nunca versionar ###
 .env
 .env.*
