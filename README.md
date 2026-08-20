@@ -1,6 +1,6 @@
 # ChatBot Gemini
 
-Monorepo do chatbot de supermercado: API Java/Spring Boot com Google Gemini e interface web estática.
+Monorepo do chatbot de supermercado: API Java/Spring Boot com Google Gemini (via endpoint OpenAI-compatible) e interface web estática.
 
 ## Estrutura
 
@@ -27,6 +27,8 @@ mvn spring-boot:run
 ```
 
 Defina `GEMINI_API_KEY` no ambiente (não commite a chave). A API sobe em `http://localhost:8080`.
+
+O back-end usa `langchain4j-open-ai-spring-boot-starter` apontando para `https://generativelanguage.googleapis.com/v1beta/openai/` (modelo `gemini-3.6-flash`). O `OpenAiChatModel` é um `@Bean` manual: o payload **não** envia `temperature` nem `thinking_budget`. No loop de `@Tool`, um interceptor HTTP reinsere `tool_calls[].extra_content.google.thought_signature` (o conector OpenAI do LangChain4j descarta esse campo).
 
 - Chat: `POST /api/chat`
 - Console H2: `http://localhost:8080/h2-console`

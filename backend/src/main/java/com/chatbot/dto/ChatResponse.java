@@ -7,7 +7,7 @@ import java.time.Instant;
  */
 public record ChatResponse(
         String sessionId,
-        String reply,
+        String response,
         Instant timestamp
 ) {
 }

@@ -53,10 +53,14 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Auto-configura GoogleAiGeminiChatModel (chave AI Studio AIza...) -->
+        <!--
+            OpenAI-compatible: usa OpenAiChatModel apontando para o endpoint
+            Gemini da Google (v1beta/openai). Contorna a validação rígida de
+            thought_signature do conector nativo google-ai-gemini nas @Tool.
+        -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-google-ai-gemini-spring-boot-starter</artifactId>
+            <artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
             <version>${langchain4j.version}</version>
         </dependency>
 

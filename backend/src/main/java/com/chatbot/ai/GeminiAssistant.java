@@ -10,7 +10,7 @@ import dev.langchain4j.service.spring.AiService;
  * Contrato declarativo com o Gemini (padrão AI Service do LangChain4j).
  *
  * Não há implementação manual: o starter cria um proxy Spring que:
- *  1. injeta o {@code GoogleAiGeminiChatModel} auto-configurado;
+ *  1. injeta o {@code OpenAiChatModel} (endpoint Gemini OpenAI-compatible, bean em OpenAiGeminiChatModelConfig);
  *  2. anexa o histórico da sessão identificada por {@code @MemoryId};
  *  3. envia o System Prompt e a mensagem do usuário;
  *  4. registra automaticamente as tools {@code @Tool} (consulta ao catálogo SQL);

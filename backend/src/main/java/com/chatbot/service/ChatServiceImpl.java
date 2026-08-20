@@ -32,8 +32,8 @@ public class ChatServiceImpl implements ChatService {
         log.info("Processando mensagem da sessão {}", sessionId);
 
         try {
-            String reply = geminiAssistant.chat(sessionId, request.message());
-            return new ChatResponse(sessionId, reply, Instant.now());
+            String response = geminiAssistant.chat(sessionId, request.message());
+            return new ChatResponse(sessionId, response, Instant.now());
         } catch (RuntimeException ex) {
             throw new GeminiIntegrationException(
                     "Erro ao invocar o Gemini para a sessão " + sessionId,
