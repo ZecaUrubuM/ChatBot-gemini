@@ -15,7 +15,6 @@ Monorepo do chatbot de supermercado: API Java/Spring Boot com Google Gemini (via
 └── README.md
 ```
 
-O repositório Git fica **somente na raiz**. Não há pasta `.git` dentro de `backend` ou `frontend`.
 
 ## Backend
 
