@@ -1,285 +1,769 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MercadoBot — Chat</title>
-  <style>
-    :root {
-      --bg: #0f1419;
-      --bg-soft: #1a2332;
-      --panel: #15202b;
-      --border: #243447;
-      --text: #e7ecf0;
-      --muted: #8b98a5;
-      --user: #1d9bf0;
-      --user-text: #fff;
-      --bot: #22303c;
-      --bot-text: #e7ecf0;
-      --accent: #00ba7c;
-      --danger: #f4212e;
-      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MercadoBot — Personalizar</title>
+<style>
+  :root {
+    --brand-purple: #5B2AD6;
+    --brand-purple-dark: #4A1FB8;
+    --brand-purple-soft: #EDE6FB;
+    --dash-bg: #ffffff;
+    --dash-sidebar-bg: #FAFAFC;
+    --dash-canvas: #F2F3F6;
+    --dash-border: #E9E9EF;
+    --dash-text: #14141A;
+    --dash-muted: #767B87;
+  }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
 
-    html, body {
-      height: 100%;
-    }
+  body {
+    font-family: "Segoe UI", Inter, system-ui, -apple-system, sans-serif;
+    background: var(--dash-canvas);
+    color: var(--dash-text);
+    display: grid;
+    place-items: center;
+    padding: 20px;
+  }
 
-    body {
-      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(29, 155, 240, 0.18), transparent 32%),
-        radial-gradient(circle at bottom right, rgba(0, 186, 124, 0.14), transparent 28%),
-        var(--bg);
-      color: var(--text);
-      display: grid;
-      place-items: center;
-      padding: 16px;
-    }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
 
-    .app {
-      width: min(760px, 100%);
-      height: min(860px, 100%);
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+  button, input, textarea { font-family: inherit; }
 
-    header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, #1b2836 0%, #15202b 100%);
-    }
+  :focus-visible { outline: 2px solid var(--brand-purple); outline-offset: 2px; }
 
-    .logo {
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #00ba7c, #1d9bf0);
-      font-size: 22px;
-      flex-shrink: 0;
-    }
+  /* ===================== App shell ===================== */
 
-    .title h1 {
-      font-size: 1.05rem;
-      font-weight: 700;
-    }
+  .app-shell {
+    width: min(1240px, 100%);
+    height: min(840px, 100%);
+    background: var(--dash-bg);
+    border: 1px solid var(--dash-border);
+    border-radius: 22px;
+    box-shadow: 0 30px 80px rgba(20, 20, 30, 0.16);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 
-    .title p {
-      color: var(--muted);
-      font-size: 0.82rem;
-      margin-top: 2px;
-    }
+  .topbar {
+    flex-shrink: 0;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 22px;
+    background: linear-gradient(90deg, var(--brand-purple), var(--brand-purple-dark));
+  }
 
-    .session {
-      margin-left: auto;
-      font-size: 0.75rem;
-      color: var(--muted);
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 6px 10px;
-      white-space: nowrap;
-    }
+  .topbar-logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
 
-    #chat {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 16px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      scroll-behavior: smooth;
-    }
+  .topbar-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: #fff;
+  }
 
-    .msg {
-      max-width: min(78%, 560px);
-      padding: 12px 14px;
-      border-radius: 18px;
-      line-height: 1.45;
-      font-size: 0.95rem;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      animation: rise 180ms ease-out;
-    }
+  .topbar-text strong { font-size: 0.92rem; }
+  .topbar-text span { font-size: 0.72rem; color: rgba(255, 255, 255, 0.75); }
 
-    .msg.user {
-      align-self: flex-end;
-      background: var(--user);
-      color: var(--user-text);
-      border-bottom-right-radius: 6px;
-    }
+  .body-row {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+  }
 
-    .msg.bot {
-      align-self: flex-start;
-      background: var(--bot);
-      color: var(--bot-text);
-      border-bottom-left-radius: 6px;
-    }
+  /* ===================== Icon rail ===================== */
 
-    .msg.error {
-      align-self: flex-start;
-      background: rgba(244, 33, 46, 0.12);
-      color: #ff8a92;
-      border: 1px solid rgba(244, 33, 46, 0.35);
-      border-bottom-left-radius: 6px;
-    }
+  .rail {
+    width: 64px;
+    flex-shrink: 0;
+    background: var(--dash-sidebar-bg);
+    border-right: 1px solid var(--dash-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 0;
+  }
 
-    .meta {
-      display: block;
-      margin-top: 6px;
-      font-size: 0.7rem;
-      opacity: 0.72;
-    }
+  .rail-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 0;
+    background: transparent;
+    color: #9298A5;
+    display: grid;
+    place-items: center;
+    cursor: default;
+  }
 
-    .typing {
-      align-self: flex-start;
-      display: none;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      background: var(--bot);
-      border-radius: 18px;
-      border-bottom-left-radius: 6px;
-      padding: 10px 14px;
-      font-size: 0.88rem;
-    }
+  .rail-btn svg { width: 20px; height: 20px; }
 
-    .typing.visible {
-      display: inline-flex;
-    }
+  .rail-btn.active {
+    background: var(--brand-purple-soft);
+    color: var(--brand-purple);
+  }
 
-    .dots span {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #8b98a5;
-      display: inline-block;
-      animation: bounce 1s infinite;
-    }
+  /* ===================== Main content ===================== */
 
-    .dots span:nth-child(2) { animation-delay: 0.15s; }
-    .dots span:nth-child(3) { animation-delay: 0.3s; }
+  .content {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(300px, 400px) 1fr;
+  }
 
-    form {
-      display: flex;
-      gap: 10px;
-      padding: 14px;
-      border-top: 1px solid var(--border);
-      background: #121a24;
-    }
+  .customize-panel {
+    padding: 34px 32px 24px;
+    border-right: 1px solid var(--dash-border);
+    overflow-y: auto;
+  }
 
-    #message {
-      flex: 1;
-      resize: none;
-      min-height: 48px;
-      max-height: 140px;
-      border: 1px solid var(--border);
-      background: var(--bg-soft);
-      color: var(--text);
-      border-radius: 16px;
-      padding: 13px 14px;
-      font: inherit;
-      outline: none;
-    }
+  .customize-panel h1 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin-bottom: 28px;
+  }
 
-    #message:focus {
-      border-color: #1d9bf0;
-    }
+  .field-group { margin-bottom: 30px; }
 
-    button {
-      border: 0;
-      border-radius: 16px;
-      min-width: 96px;
-      background: var(--accent);
-      color: #06281c;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-    }
+  .field-group h2 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
 
-    button:hover { transform: translateY(-1px); }
-    button:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-      transform: none;
-    }
+  .field-label {
+    font-size: 0.78rem;
+    color: var(--dash-muted);
+    margin-bottom: 10px;
+  }
 
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+  /* Theme cards */
 
-    @keyframes bounce {
-      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
-      40% { transform: translateY(-4px); opacity: 1; }
-    }
+  .theme-cards { display: flex; gap: 14px; }
 
-    @media (max-width: 640px) {
-      body { padding: 0; }
-      .app {
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-        border: 0;
-      }
-      .msg { max-width: 86%; }
-      .session { display: none; }
-    }
-  </style>
+  .theme-card {
+    position: relative;
+    flex: 1;
+    border: 2px solid var(--dash-border);
+    border-radius: 16px;
+    padding: 22px 10px 18px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--dash-text);
+    transition: border-color 0.15s ease;
+  }
+
+  .theme-card svg { width: 32px; height: 32px; color: var(--brand-purple); }
+
+  .theme-card.is-active { border-color: var(--brand-purple); }
+
+  .check-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--brand-purple);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* Color swatches */
+
+  .swatch-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .swatch {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 0;
+    cursor: pointer;
+    background: var(--sw);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .swatch.is-active::after {
+    content: "✓";
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+
+  .swatch.swatch-custom {
+    background: conic-gradient(from 0deg, #ff3b30, #ff9500, #ffcc00, #34c759, #0ea968, #5ac8fa, #5b2ad6, #ff3b30);
+  }
+
+  .swatch-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .reset-btn {
+    border: 0;
+    background: transparent;
+    color: var(--brand-purple);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding: 4px 0;
+  }
+
+  /* ===================== Preview panel ===================== */
+
+  .preview-panel {
+    background: var(--dash-canvas);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    overflow: auto;
+  }
+
+  .widget {
+    width: min(420px, 100%);
+    height: min(660px, 100%);
+    border-radius: 20px;
+    box-shadow: 0 24px 60px rgba(20, 20, 30, 0.16);
+    border: 1px solid var(--w-border);
+    background: var(--w-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .widget[data-theme="light"] {
+    --w-bg: #ffffff;
+    --w-border: #E7E9EC;
+    --w-text: #14181D;
+    --w-muted: #8B98A5;
+    --w-input-bg: #F1F2F4;
+  }
+
+  .widget[data-theme="dark"] {
+    --w-bg: #15202B;
+    --w-border: #243447;
+    --w-text: #E7ECF0;
+    --w-muted: #92A0AC;
+    --w-input-bg: #1C2733;
+  }
+
+  .widget-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--w-border);
+  }
+
+  .widget-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #232A33;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .widget-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: var(--w-text);
+    min-width: 0;
+  }
+
+  .widget-header-text strong { font-size: 0.95rem; }
+  .widget-header-text span { font-size: 0.72rem; color: var(--w-muted); }
+
+  .widget-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 16px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .msg {
+    max-width: 82%;
+    padding: 11px 14px;
+    border-radius: 16px;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    animation: rise 160ms ease-out;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.bot {
+    align-self: flex-start;
+    background: var(--bot-bg);
+    color: var(--bot-text);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg.user {
+    align-self: flex-end;
+    background: var(--accent);
+    color: var(--accent-text);
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg.error {
+    align-self: flex-start;
+    background: rgba(224, 67, 43, 0.12);
+    border: 1px solid rgba(224, 67, 43, 0.35);
+    color: #c23b2b;
+    border-bottom-left-radius: 4px;
+  }
+
+  .meta { display: block; margin-top: 6px; font-size: 0.68rem; opacity: 0.7; }
+
+  .typing {
+    align-self: flex-start;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    color: var(--w-muted);
+    background: var(--bot-bg);
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .typing.visible { display: inline-flex; }
+
+  .dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.5;
+    display: inline-block;
+    animation: bounce 1s infinite;
+  }
+
+  .dots span:nth-child(2) { animation-delay: 0.15s; }
+  .dots span:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
+    40% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  .quick-replies {
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px 16px 12px;
+  }
+
+  .chip {
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+    border-radius: 999px;
+    padding: 7px 13px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.12s ease, color 0.12s ease;
+  }
+
+  .chip:hover:not(:disabled) { background: var(--accent); color: var(--accent-text); }
+  .chip:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .widget-form {
+    flex-shrink: 0;
+    display: flex;
+    gap: 10px;
+    padding: 14px;
+    border-top: 1px solid var(--w-border);
+  }
+
+  #message {
+    flex: 1;
+    resize: none;
+    min-height: 46px;
+    max-height: 120px;
+    border: 1px solid var(--w-border);
+    background: var(--w-input-bg);
+    color: var(--w-text);
+    border-radius: 14px;
+    padding: 12px 13px;
+    outline: none;
+  }
+
+  #message:focus { border-color: var(--accent); }
+
+  #sendBtn {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    border: 0;
+    background: var(--accent);
+    color: var(--accent-text);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.12s ease, opacity 0.12s ease;
+  }
+
+  #sendBtn svg { width: 19px; height: 19px; }
+  #sendBtn:hover:not(:disabled) { transform: translateY(-1px); }
+  #sendBtn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .scroll-btn {
+    position: absolute;
+    right: 16px;
+    bottom: 96px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-text);
+    border: 0;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .scroll-btn svg { width: 16px; height: 16px; }
+  .scroll-btn[hidden] { display: none; }
+
+  /* ===================== Responsive ===================== */
+
+  @media (max-width: 860px) {
+    .content { grid-template-columns: 1fr; overflow-y: auto; }
+    .customize-panel { border-right: 0; border-bottom: 1px solid var(--dash-border); }
+    .preview-panel { min-height: 560px; }
+  }
+
+  @media (max-width: 560px) {
+    body { padding: 0; }
+    .app-shell { width: 100%; height: 100%; border-radius: 0; border: 0; }
+    .rail { width: 52px; }
+  }
+</style>
 </head>
 <body>
-  <main class="app">
-    <header>
-      <div class="logo" aria-hidden="true">🛒</div>
-      <div class="title">
-        <h1>MercadoBot</h1>
-        <p>Assistente do supermercado</p>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-logo" aria-hidden="true">🛒</div>
+      <div class="topbar-text">
+        <strong>Mercado Bom Preço</strong>
+        <span>Painel do assistente virtual</span>
       </div>
-      <div class="session" id="sessionLabel">sessão: —</div>
     </header>
 
-    <section id="chat" aria-live="polite">
-      <div class="msg bot">
-        Olá! Sou o MercadoBot. Posso ajudar com produtos, preços e disponibilidade.
-        <span class="meta">agora</span>
-      </div>
-      <div class="typing" id="typing">
-        <span>Digitando</span>
-        <span class="dots"><span></span><span></span><span></span></span>
-      </div>
-    </section>
+    <div class="body-row">
+      <nav class="rail" aria-label="Navegação do painel">
+        <button class="rail-btn" type="button" title="Início" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        </button>
+        <button class="rail-btn" type="button" title="Contatos" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 19c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/><circle cx="17.5" cy="9" r="2.7"/><path d="M15 13.2c2.9.4 5 2.6 5 5.8"/></svg>
+        </button>
+        <button class="rail-btn" type="button" title="Configurações" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a1.7 1.7 0 000-3l1-1.7-1.7-1.7-1.7 1a1.7 1.7 0 00-3-1L13.5 4.6h-3L10 6.6a1.7 1.7 0 00-3 1l-1.7-1L3.6 8.3l1 1.7a1.7 1.7 0 000 3l-1 1.7 1.7 1.7 1.7-1a1.7 1.7 0 003 1l.5 2h3l.5-2a1.7 1.7 0 003-1l1.7 1 1.7-1.7z"/></svg>
+        </button>
+        <button class="rail-btn active" type="button" title="Personalizar bot" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="3"/><path d="M12 9V5"/><circle cx="12" cy="4" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="14.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="14.5" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 12.5h1.8M19.7 12.5h1.8"/></svg>
+        </button>
+      </nav>
 
-    <form id="chatForm">
-      <textarea id="message" rows="1" placeholder="Digite sua mensagem..." autocomplete="off"></textarea>
-      <button type="submit" id="sendBtn">Enviar</button>
-    </form>
-  </main>
+      <main class="content">
+        <section class="customize-panel">
+          <h1>Altere as cores para<br>personalizar seu bot</h1>
+
+          <div class="field-group">
+            <h2>Tema</h2>
+            <div class="theme-cards" id="themeCards">
+              <button class="theme-card" type="button" data-theme-choice="light">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/></svg>
+                <span>Claro</span>
+                <span class="check-badge" hidden>✓</span>
+              </button>
+              <button class="theme-card" type="button" data-theme-choice="dark">
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.6 15.1A8.7 8.7 0 019 3.4a.8.8 0 00-1-1A10.3 10.3 0 1021.6 16a.8.8 0 00-1-.9z"/></svg>
+                <span>Escuro</span>
+                <span class="check-badge" hidden>✓</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <h2>Cor</h2>
+
+            <p class="field-label">Cor de destaque</p>
+            <div class="swatch-row" id="accentSwatches">
+              <button class="swatch" type="button" data-accent="#5B2AD6" style="--sw:#5B2AD6" title="Violeta"></button>
+              <button class="swatch" type="button" data-accent="#A855F7" style="--sw:#A855F7" title="Orquídea"></button>
+              <button class="swatch" type="button" data-accent="#E0432B" style="--sw:#E0432B" title="Vermelho"></button>
+              <button class="swatch" type="button" data-accent="#F2884B" style="--sw:#F2884B" title="Laranja"></button>
+              <button class="swatch" type="button" data-accent="#F2C13D" style="--sw:#F2C13D" title="Amarelo"></button>
+              <button class="swatch" type="button" data-accent="#0EA968" style="--sw:#0EA968" title="Verde"></button>
+              <button class="swatch" type="button" data-accent="#3B82F6" style="--sw:#3B82F6" title="Azul"></button>
+              <button class="swatch swatch-custom" type="button" id="accentCustomBtn" title="Cor personalizada"></button>
+              <input type="color" id="accentCustomInput" class="swatch-input" aria-label="Cor de destaque personalizada" />
+            </div>
+
+            <p class="field-label">Mensagens do bot</p>
+            <div class="swatch-row" id="botSwatches">
+              <button class="swatch" type="button" data-bot="#E9EBEF" style="--sw:#E9EBEF" title="Cinza (padrão)"></button>
+              <button class="swatch swatch-custom" type="button" id="botCustomBtn" title="Cor personalizada"></button>
+              <input type="color" id="botCustomInput" class="swatch-input" aria-label="Cor das mensagens do bot personalizada" />
+            </div>
+          </div>
+
+          <button class="reset-btn" type="button" id="resetBtn">Restaurar padrão</button>
+        </section>
+
+        <section class="preview-panel">
+          <div class="widget" id="widget" data-theme="light">
+            <div class="widget-header">
+              <div class="widget-avatar" aria-hidden="true">🤖</div>
+              <div class="widget-header-text">
+                <strong>MercadoBot</strong>
+                <span id="sessionLabel">sessão: —</span>
+              </div>
+            </div>
+
+            <div class="widget-body" id="chat" aria-live="polite">
+              <div class="msg bot">
+                Olá! Sou o MercadoBot. Posso ajudar com produtos, preços e disponibilidade.
+                <span class="meta">agora</span>
+              </div>
+              <div class="typing" id="typing">
+                <span>Digitando</span>
+                <span class="dots"><span></span><span></span><span></span></span>
+              </div>
+            </div>
+
+            <div class="quick-replies" id="quickReplies">
+              <button class="chip" type="button" data-quick="Quais categorias vocês têm?">Quais categorias vocês têm?</button>
+              <button class="chip" type="button" data-quick="O que tem em estoque agora?">O que tem em estoque agora?</button>
+              <button class="chip" type="button" data-quick="Qual o preço do arroz?">Qual o preço do arroz?</button>
+            </div>
+
+            <form id="chatForm" class="widget-form">
+              <textarea id="message" rows="1" placeholder="Digite sua mensagem..." autocomplete="off"></textarea>
+              <button type="submit" id="sendBtn" aria-label="Enviar mensagem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+              </button>
+            </form>
+
+            <button class="scroll-btn" type="button" id="scrollBtn" aria-label="Ir para o fim da conversa" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
 
   <script>
     const API_URL = "http://localhost:8080/api/chat";
+    const STORAGE_KEY = "mercadobot-customization";
+    const DEFAULTS = { theme: "light", accent: "#0EA968", botBg: "#E9EBEF" };
+    const ACCENT_PRESETS = ["#5b2ad6", "#a855f7", "#e0432b", "#f2884b", "#f2c13d", "#0ea968", "#3b82f6"];
+    const BOT_PRESETS = ["#e9ebef"];
+
+    // ---------- DOM references ----------
+    const widget = document.getElementById("widget");
     const chat = document.getElementById("chat");
     const form = document.getElementById("chatForm");
     const input = document.getElementById("message");
     const sendBtn = document.getElementById("sendBtn");
     const typing = document.getElementById("typing");
     const sessionLabel = document.getElementById("sessionLabel");
+    const scrollBtn = document.getElementById("scrollBtn");
+    const quickReplyButtons = document.querySelectorAll(".chip");
 
+    const themeCards = document.querySelectorAll(".theme-card");
+    const accentSwatchButtons = document.querySelectorAll("#accentSwatches .swatch[data-accent]");
+    const accentCustomBtn = document.getElementById("accentCustomBtn");
+    const accentCustomInput = document.getElementById("accentCustomInput");
+    const botSwatchButtons = document.querySelectorAll("#botSwatches .swatch[data-bot]");
+    const botCustomBtn = document.getElementById("botCustomBtn");
+    const botCustomInput = document.getElementById("botCustomInput");
+    const resetBtn = document.getElementById("resetBtn");
+
+    // ---------- Color helpers ----------
+    function hexToRgb(hex) {
+      const clean = hex.replace("#", "");
+      const full = clean.length === 3 ? clean.split("").map((c) => c + c).join("") : clean;
+      const num = parseInt(full, 16);
+      return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+    }
+
+    function relativeLuminance({ r, g, b }) {
+      const [rs, gs, bs] = [r, g, b].map((v) => {
+        const c = v / 255;
+        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+    }
+
+    function contrastText(hex) {
+      try {
+        return relativeLuminance(hexToRgb(hex)) > 0.55 ? "#14181D" : "#FFFFFF";
+      } catch (err) {
+        return "#14181D";
+      }
+    }
+
+    // ---------- State ----------
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { ...DEFAULTS };
+        return { ...DEFAULTS, ...JSON.parse(raw) };
+      } catch (err) {
+        return { ...DEFAULTS };
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (err) {
+        // Armazenamento indisponível (modo privado, etc.) — segue sem persistir.
+      }
+    }
+
+    let state = loadState();
+
+    function applyState() {
+      widget.dataset.theme = state.theme;
+      widget.style.setProperty("--accent", state.accent);
+      widget.style.setProperty("--accent-text", contrastText(state.accent));
+      widget.style.setProperty("--bot-bg", state.botBg);
+      widget.style.setProperty("--bot-text", contrastText(state.botBg));
+
+      themeCards.forEach((card) => {
+        const active = card.dataset.themeChoice === state.theme;
+        card.classList.toggle("is-active", active);
+        card.querySelector(".check-badge").hidden = !active;
+      });
+
+      const accentLower = state.accent.toLowerCase();
+      accentSwatchButtons.forEach((btn) => {
+        btn.classList.toggle("is-active", btn.dataset.accent.toLowerCase() === accentLower);
+      });
+      accentCustomBtn.classList.toggle("is-active", !ACCENT_PRESETS.includes(accentLower));
+
+      const botLower = state.botBg.toLowerCase();
+      botSwatchButtons.forEach((btn) => {
+        btn.classList.toggle("is-active", btn.dataset.bot.toLowerCase() === botLower);
+      });
+      botCustomBtn.classList.toggle("is-active", !BOT_PRESETS.includes(botLower));
+
+      saveState();
+    }
+
+    themeCards.forEach((card) => {
+      card.addEventListener("click", () => {
+        state.theme = card.dataset.themeChoice;
+        applyState();
+      });
+    });
+
+    accentSwatchButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.accent = btn.dataset.accent;
+        applyState();
+      });
+    });
+
+    accentCustomBtn.addEventListener("click", () => accentCustomInput.click());
+    accentCustomInput.addEventListener("input", (e) => {
+      state.accent = e.target.value;
+      applyState();
+    });
+
+    botSwatchButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.botBg = btn.dataset.bot;
+        applyState();
+      });
+    });
+
+    botCustomBtn.addEventListener("click", () => botCustomInput.click());
+    botCustomInput.addEventListener("input", (e) => {
+      state.botBg = e.target.value;
+      applyState();
+    });
+
+    resetBtn.addEventListener("click", () => {
+      state = { ...DEFAULTS };
+      applyState();
+    });
+
+    applyState();
+
+    // ---------- Chat logic ----------
     function getSessionId() {
       let id = sessionStorage.getItem("sessionId");
       if (!id) {
@@ -300,7 +784,17 @@
       return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
     }
 
+    function isNearBottom() {
+      return chat.scrollHeight - chat.scrollTop - chat.clientHeight < 40;
+    }
+
+    function updateScrollButton() {
+      scrollBtn.hidden = isNearBottom();
+    }
+
     function addMessage(text, type, timestamp) {
+      const stickToBottom = isNearBottom();
+
       const bubble = document.createElement("div");
       bubble.className = "msg " + type;
       bubble.textContent = text;
@@ -311,19 +805,41 @@
       bubble.appendChild(meta);
 
       chat.insertBefore(bubble, typing);
-      chat.scrollTop = chat.scrollHeight;
+
+      if (stickToBottom) {
+        chat.scrollTop = chat.scrollHeight;
+      }
+      updateScrollButton();
     }
 
     function setLoading(isLoading) {
       typing.classList.toggle("visible", isLoading);
       sendBtn.disabled = isLoading;
       input.disabled = isLoading;
-      if (isLoading) {
+      quickReplyButtons.forEach((btn) => (btn.disabled = isLoading));
+      if (isLoading && isNearBottom()) {
         chat.scrollTop = chat.scrollHeight;
       }
     }
 
+    const RATE_LIMIT_FALLBACK =
+      "Cheguei no limite de requisições por minuto da API. Por favor, tente novamente em alguns segundos.";
+
+    async function readRateLimitMessage(res) {
+      try {
+        const data = await res.json();
+        if (data && typeof data.message === "string" && data.message.trim()) {
+          return data.message;
+        }
+      } catch (err) {
+        // corpo vazio ou não-JSON — usa o texto amigável abaixo
+      }
+      return RATE_LIMIT_FALLBACK;
+    }
+
     async function sendMessage(message) {
+      if (!message) return;
+
       addMessage(message, "user");
       setLoading(true);
 
@@ -333,6 +849,11 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ sessionId, message })
         });
+
+        if (res.status === 429) {
+          addMessage(await readRateLimitMessage(res), "bot");
+          return;
+        }
 
         if (!res.ok) {
           throw new Error("HTTP " + res.status);
@@ -362,6 +883,18 @@
         event.preventDefault();
         form.requestSubmit();
       }
+    });
+
+    quickReplyButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (btn.disabled) return;
+        sendMessage(btn.dataset.quick);
+      });
+    });
+
+    chat.addEventListener("scroll", updateScrollButton);
+    scrollBtn.addEventListener("click", () => {
+      chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
     });
 
     input.focus();
