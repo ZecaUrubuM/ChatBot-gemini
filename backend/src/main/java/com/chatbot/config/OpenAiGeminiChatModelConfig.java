@@ -18,7 +18,8 @@ import java.time.Duration;
  * Não envia temperature / topP / maxTokens / frequencyPenalty / presencePenalty /
  * reasoningEffort / thinking_budget: o 3.6-flash devolve 400 INVALID_ARGUMENT.
  * Thinking no Gemini 3 não desliga; function calling exige {@code thought_signature}.
- * O {@link ThoughtSignatureHttpClientBuilder} faz o round-trip (ou o sentinel oficial).
+ * O {@link ThoughtSignatureHttpClientBuilder} normaliza a ordem das {@code messages}
+ * e faz o round-trip da assinatura (ou o sentinel oficial).
  */
 @Configuration
 public class OpenAiGeminiChatModelConfig {
@@ -36,9 +37,10 @@ public class OpenAiGeminiChatModelConfig {
             @Value("${langchain4j.open-ai.chat-model.log-responses:true}") boolean logResponses
     ) {
         GeminiThoughtSignatureSupport signatures = new GeminiThoughtSignatureSupport(objectMapper);
+        GeminiOpenAiMessageNormalizer messageNormalizer = new GeminiOpenAiMessageNormalizer(objectMapper);
 
         return OpenAiChatModel.builder()
-                .httpClientBuilder(new ThoughtSignatureHttpClientBuilder(signatures, restClientBuilder))
+                .httpClientBuilder(new ThoughtSignatureHttpClientBuilder(signatures, messageNormalizer, restClientBuilder))
                 .baseUrl(baseUrl)
                 .apiKey(apiKey)
                 .modelName(modelName)

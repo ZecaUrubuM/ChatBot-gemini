@@ -11,8 +11,10 @@ import dev.langchain4j.service.spring.AiService;
  *
  * Não há implementação manual: o starter cria um proxy Spring que:
  *  1. injeta o {@code OpenAiChatModel} (endpoint Gemini OpenAI-compatible, bean em OpenAiGeminiChatModelConfig);
- *  2. anexa o histórico da sessão identificada por {@code @MemoryId};
- *  3. envia o System Prompt e a mensagem do usuário;
+ *  2. anexa o histórico da sessão identificada por {@code @MemoryId}
+ *     ({@code GeminiCompatibleChatMemory}: SystemMessage só no início;
+ *     turnos User → Ai(tool) → ToolResult → Ai);
+ *  3. envia o System Prompt uma vez (não o reinsere entre function calls);
  *  4. registra automaticamente as tools {@code @Tool} (consulta ao catálogo SQL);
  *  5. executa function calling quando o modelo precisa de preço/estoque reais;
  *  6. devolve apenas o texto da resposta.

@@ -15,12 +15,18 @@ final class ThoughtSignatureHttpClientBuilder implements HttpClientBuilder {
 
     private final HttpClientBuilder delegate;
     private final GeminiThoughtSignatureSupport signatures;
+    private final GeminiOpenAiMessageNormalizer messageNormalizer;
 
-    ThoughtSignatureHttpClientBuilder(GeminiThoughtSignatureSupport signatures, RestClient.Builder restClientBuilder) {
+    ThoughtSignatureHttpClientBuilder(
+            GeminiThoughtSignatureSupport signatures,
+            GeminiOpenAiMessageNormalizer messageNormalizer,
+            RestClient.Builder restClientBuilder
+    ) {
         this.delegate = SpringRestClient.builder()
                 .restClientBuilder(restClientBuilder.clone())
                 .createDefaultStreamingRequestExecutor(false);
         this.signatures = signatures;
+        this.messageNormalizer = messageNormalizer;
     }
 
     @Override
@@ -47,6 +53,6 @@ final class ThoughtSignatureHttpClientBuilder implements HttpClientBuilder {
 
     @Override
     public HttpClient build() {
-        return new ThoughtSignatureHttpClient(delegate.build(), signatures);
+        return new ThoughtSignatureHttpClient(delegate.build(), signatures, messageNormalizer);
     }
 }

@@ -7,17 +7,24 @@ import dev.langchain4j.http.client.sse.ServerSentEventListener;
 import dev.langchain4j.http.client.sse.ServerSentEventParser;
 
 /**
- * Intercepta o HTTP do {@code OpenAiChatModel} para round-trip de
+ * Intercepta o HTTP do {@code OpenAiChatModel}: normaliza a ordem das
+ * {@code messages} (Gemini function calling) e faz o round-trip de
  * {@code thought_signature} exigido pelo {@code gemini-3.6-flash} nas {@code @Tool}.
  */
 final class ThoughtSignatureHttpClient implements HttpClient {
 
     private final HttpClient delegate;
     private final GeminiThoughtSignatureSupport signatures;
+    private final GeminiOpenAiMessageNormalizer messageNormalizer;
 
-    ThoughtSignatureHttpClient(HttpClient delegate, GeminiThoughtSignatureSupport signatures) {
+    ThoughtSignatureHttpClient(
+            HttpClient delegate,
+            GeminiThoughtSignatureSupport signatures,
+            GeminiOpenAiMessageNormalizer messageNormalizer
+    ) {
         this.delegate = delegate;
         this.signatures = signatures;
+        this.messageNormalizer = messageNormalizer;
     }
 
     @Override
@@ -37,7 +44,8 @@ final class ThoughtSignatureHttpClient implements HttpClient {
         if (body == null || body.isBlank()) {
             return request;
         }
-        String rewritten = signatures.injectOnRequest(body);
+        String rewritten = messageNormalizer.normalize(body);
+        rewritten = signatures.injectOnRequest(rewritten);
         if (rewritten.equals(body)) {
             return request;
         }

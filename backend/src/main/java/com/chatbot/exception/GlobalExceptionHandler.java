@@ -1,6 +1,8 @@
 package com.chatbot.exception;
 
 import com.chatbot.dto.ErrorResponse;
+import com.chatbot.dto.RateLimitErrorResponse;
+import dev.langchain4j.exception.RateLimitException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -64,11 +66,21 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), request, List.of());
     }
 
+    @ExceptionHandler({RateLimitExceededException.class, RateLimitException.class})
+    public ResponseEntity<RateLimitErrorResponse> handleRateLimit(RuntimeException ex) {
+        log.warn("Cota da API Gemini esgotada: {}", ex.getMessage());
+        return rateLimitBody();
+    }
+
     @ExceptionHandler(GeminiIntegrationException.class)
-    public ResponseEntity<ErrorResponse> handleGemini(
+    public ResponseEntity<?> handleGemini(
             GeminiIntegrationException ex,
             HttpServletRequest request
     ) {
+        if (GeminiRateLimitDetector.matches(ex)) {
+            log.warn("Cota da API Gemini esgotada (encapsulada): {}", ex.getMessage());
+            return rateLimitBody();
+        }
         log.error("Falha na integração com o Gemini: {}", ex.getMessage(), ex);
         return build(
                 HttpStatus.BAD_GATEWAY,
@@ -79,12 +91,24 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleUnexpected(
+    public ResponseEntity<?> handleUnexpected(
             Exception ex,
             HttpServletRequest request
     ) {
+        if (GeminiRateLimitDetector.matches(ex)) {
+            log.warn("Cota da API Gemini esgotada (não mapeada): {}", ex.getMessage());
+            return rateLimitBody();
+        }
         log.error("Erro inesperado", ex);
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor", request, List.of());
+    }
+
+    private ResponseEntity<RateLimitErrorResponse> rateLimitBody() {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(new RateLimitErrorResponse(
+                        RateLimitExceededException.ERROR_CODE,
+                        RateLimitExceededException.USER_MESSAGE
+                ));
     }
 
     private ResponseEntity<ErrorResponse> build(
